@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="920" viewBox="0 0 1440 920">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <style>
+      .title { font: 700 34px Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 600 16px Arial, sans-serif; fill: #475569; }
+      .step { font: 700 18px Arial, sans-serif; fill: #0f172a; }
+      .small { font: 500 13px Arial, sans-serif; fill: #475569; }
+      .box { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 2; }
+      .blue { fill: #dbeafe; stroke: #2563eb; }
+      .green { fill: #dcfce7; stroke: #16a34a; }
+      .amber { fill: #fef3c7; stroke: #d97706; }
+      .purple { fill: #f3e8ff; stroke: #9333ea; }
+      .red { fill: #fee2e2; stroke: #dc2626; }
+      .gray { fill: #e2e8f0; stroke: #64748b; }
+      .arrow { stroke: #475569; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .tag { font: 700 12px Arial, sans-serif; fill: #0f172a; }
+    </style>
+  </defs>
+
+  <rect width="1440" height="920" fill="#ffffff"/>
+
+  <text x="72" y="76" class="title">Resilient Caching Library</text>
+  <text x="72" y="108" class="subtitle">System flow for hot-key expiry protection, negative caching, and circuit-breaker safety</text>
+
+  <rect x="72" y="160" width="220" height="120" rx="18" class="box blue"/>
+  <circle cx="118" cy="205" r="22" fill="#2563eb"/>
+  <text x="118" y="212" text-anchor="middle" class="tag" fill="#ffffff">1</text>
+  <text x="156" y="199" class="step">Request</text>
+  <text x="156" y="224" class="small">API or service call</text>
+  <text x="156" y="245" class="small">arrives with key</text>
+
+  <path d="M 292 220 H 338" class="arrow"/>
+
+  <rect x="338" y="160" width="240" height="120" rx="18" class="box green"/>
+  <circle cx="390" cy="205" r="22" fill="#16a34a"/>
+  <text x="390" y="212" text-anchor="middle" class="tag" fill="#ffffff">2</text>
+  <text x="426" y="199" class="step">Lookup</text>
+  <text x="426" y="224" class="small">Check entry and TTL</text>
+  <text x="426" y="245" class="small">early-refresh threshold</text>
+
+  <path d="M 578 220 H 624" class="arrow"/>
+
+  <rect x="624" y="160" width="240" height="120" rx="18" class="box amber"/>
+  <circle cx="676" cy="205" r="22" fill="#d97706"/>
+  <text x="676" y="212" text-anchor="middle" class="tag" fill="#0f172a">3</text>
+  <text x="712" y="199" class="step">Single-flight</text>
+  <text x="712" y="224" class="small">Only one load per key</text>
+  <text x="712" y="245" class="small">others wait or share result</text>
+
+  <path d="M 864 220 H 910" class="arrow"/>
+
+  <rect x="910" y="160" width="260" height="120" rx="18" class="box purple"/>
+  <circle cx="962" cy="205" r="22" fill="#9333ea"/>
+  <text x="962" y="212" text-anchor="middle" class="tag" fill="#ffffff">4</text>
+  <text x="998" y="199" class="step">Load + guardrails</text>
+  <text x="998" y="224" class="small">Breaker checks failure state</text>
+  <text x="998" y="245" class="small">negative cache on backend errors</text>
+
+  <path d="M 1170 220 H 1216" class="arrow"/>
+
+  <rect x="1216" y="160" width="170" height="120" rx="18" class="box red"/>
+  <circle cx="1262" cy="205" r="22" fill="#dc2626"/>
+  <text x="1262" y="212" text-anchor="middle" class="tag" fill="#ffffff">5</text>
+  <text x="1298" y="199" class="step">Result</text>
+  <text x="1298" y="224" class="small">Return value</text>
+  <text x="1298" y="245" class="small">or fail fast</text>
+
+  <path d="M 456 280 L 456 360" class="arrow"/>
+  <rect x="274" y="360" width="364" height="170" rx="22" class="box gray"/>
+  <text x="290" y="395" class="step">Hot path: cache hit</text>
+  <text x="290" y="430" class="small">- value is fresh</text>
+  <text x="290" y="456" class="small">- hit counter increments</text>
+  <text x="290" y="482" class="small">- last-access updates for eviction policy</text>
+  <text x="290" y="508" class="small">- if probabilistic early refresh triggers, key is reloaded quietly</text>
+
+  <path d="M 744 280 L 744 360" class="arrow"/>
+  <rect x="632" y="360" width="360" height="170" rx="22" class="box amber"/>
+  <text x="648" y="395" class="step">Miss path: cache miss</text>
+  <text x="648" y="430" class="small">- do not let multiple goroutines hit backend together</text>
+  <text x="648" y="456" class="small">- one worker performs loader call while others wait</text>
+  <text x="648" y="482" class="small">- result writes back with TTL and updates the eviction order</text>
+  <text x="648" y="508" class="small">- downstream latency stays bounded even under expiry storms</text>
+
+  <path d="M 1040 280 L 1040 360" class="arrow"/>
+  <rect x="854" y="360" width="372" height="170" rx="22" class="box purple"/>
+  <text x="870" y="395" class="step">Failure path: circuit and negative cache</text>
+  <text x="870" y="430" class="small">- repeated backend failures trip the breaker</text>
+  <text x="870" y="456" class="small">- open state short-circuits new requests for reset timeout</text>
+  <text x="870" y="482" class="small">- recoverable misses are stored with negative TTL for graceful degradation</text>
+  <text x="870" y="508" class="small">- normal traffic resumes after a successful half-open probe</text>
+
+  <rect x="72" y="620" width="1296" height="224" rx="24" class="gray"/>
+  <text x="98" y="660" class="step">Operational behavior</text>
+
+  <text x="98" y="700" class="small">• Single-flight collapses stampede fan-out during a hot-key expiry event.</text>
+  <text x="98" y="728" class="small">• Early refresh nudges entries back to the source before expiry, smoothing p99 latency.</text>
+  <text x="98" y="756" class="small">• Negative cache keeps brief backend outages from turning into a thundering herd.</text>
+  <text x="98" y="784" class="small">• Circuit-breaker protection prevents repeated calls from a failing datastore while it is unhealthy.</text>
+  <text x="98" y="812" class="small">• Eviction policy decides which entries to drop when the cache hits capacity, maintaining bounded memory use.</text>
+
+  <rect x="870" y="650" width="420" height="160" rx="18" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="890" y="685" class="step">Typical metrics</text>
+  <text x="890" y="720" class="small">- cache hit rate</text>
+  <text x="890" y="746" class="small">- backing-store QPS during stampede</text>
+  <text x="890" y="772" class="small">- p99 latency and recompute amplification</text>
+  <text x="890" y="798" class="small">- breaker open/closed transitions and evictions</text>
+</svg>
