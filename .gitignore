@@ -1,0 +1,12 @@
+# Build artifacts
+bin/
+*.exe
+*.test
+coverage.out
+
+# OS/editor noise
+.DS_Store
+.vscode/
+
+# Local tooling
+.env
